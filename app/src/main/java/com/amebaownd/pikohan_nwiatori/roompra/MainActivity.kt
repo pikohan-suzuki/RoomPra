@@ -6,6 +6,10 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
+import androidx.lifecycle.Observer
+import com.amebaownd.pikohan_nwiatori.roompra.database.AppDatabase
+import com.amebaownd.pikohan_nwiatori.roompra.database.Message
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val db = AppDatabase.getDatabase(this)
+
         val editText = findViewById<EditText>(R.id.message_editText)
         val listView = findViewById<ListView>(R.id.message_list)
 
@@ -22,11 +28,15 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
 
             if(!editText.text.isNullOrEmpty()){
-                messageList.add(editText.text.toString())
-                val stringArray = messageList.toTypedArray()
-                val arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,stringArray)
-                listView.adapter = arrayAdapter
+                thread {
+                    db.messageDao().insert(Message(message = editText.text.toString()))
+                }
             }
         }
+
+        db.messageDao().getMessage().observe(this, Observer {
+            val arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,it)
+                listView.adapter = arrayAdapter
+        })
     }
 }
