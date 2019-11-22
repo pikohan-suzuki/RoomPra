@@ -9,6 +9,8 @@ import android.widget.ListView
 
 class MainActivity : AppCompatActivity() {
 
+    private val messageList = mutableListOf<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,10 +21,12 @@ class MainActivity : AppCompatActivity() {
         val addButton = findViewById<Button>(R.id.add_button)
         addButton.setOnClickListener {
 
-            val stringArray = arrayOf("aaa")
-            val arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,stringArray)
-            listView.adapter = arrayAdapter
+            if(!editText.text.isNullOrEmpty()){
+                messageList.add(editText.text.toString())
+                val stringArray = messageList.toTypedArray()
+                val arrayAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,stringArray)
+                listView.adapter = arrayAdapter
+            }
         }
-
     }
 }
